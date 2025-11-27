@@ -1,0 +1,17 @@
+<header style="background-color: #007bff; color: white; padding: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center;">
+    <h1 style="margin: 0; font-size: 24px;">
+      <a routerLink="/" style="color: white; text-decoration: none;">My Employment History</a>
+    </h1>
+    <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+      <span *ngIf="username" class="welcome-text">
+        Welcome {{ username }}
+      </span>
+    </div>
+    <nav>
+      <a routerLink="/" class="nav-link">Home</a>
+      <button *ngIf="isLoggedIn" (click)="logout()" class="nav-link nav-link-logout" style="background: none; border: none; cursor: pointer;">Logout</button>
+    </nav>
+  </div>
+</header>
+

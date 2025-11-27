@@ -1,0 +1,25 @@
+version: '3.8'
+
+# Development docker-compose override
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  backend:
+    build:
+      target: builder
+    command: npm run dev
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/drizzle:/app/drizzle
+    environment:
+      NODE_ENV: development
+
+  frontend:
+    build:
+      target: builder
+    command: npm start
+    volumes:
+      - ./frontend/src:/app/src
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+

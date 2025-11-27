@@ -1,0 +1,30 @@
+.welcome-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ff8c00;
+  text-align: center;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  margin-left: 20px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+  display: inline-block;
+}
+
+.nav-link:hover {
+  background-color: rgba(255,255,255,0.2);
+}
+
+.nav-link-logout {
+  color: white;
+  font-size: 14px;
+}
+
+.nav-link-logout:hover {
+  background-color: rgba(255,255,255,0.2);
+}
+

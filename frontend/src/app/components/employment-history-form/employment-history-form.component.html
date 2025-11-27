@@ -1,0 +1,122 @@
+<div class="card">
+  <div class="card-header">
+    <h2>{{ isEditMode ? 'Edit Employment History' : 'Add New Employment History' }}</h2>
+    <a (click)="onCancel($event)" href="#" class="btn btn-secondary">Back to List</a>
+  </div>
+
+  <form [formGroup]="employmentForm" (ngSubmit)="onSubmit()">
+    <!-- Form-level validation message -->
+    <div *ngIf="employmentForm.invalid && employmentForm.touched" class="form-error-message">
+      <strong>Please correct the errors below before submitting.</strong>
+    </div>
+
+    <div class="form-group">
+      <label for="employer">Employer <span class="required-asterisk">*</span></label>
+      <input 
+        id="employer" 
+        type="text" 
+        formControlName="employer" 
+        placeholder="Enter employer name"
+        [class.error]="hasError('employer')"
+        [attr.aria-invalid]="hasError('employer')"
+        [attr.aria-describedby]="hasError('employer') ? 'employer-error' : null">
+      <div *ngIf="hasError('employer')" 
+           id="employer-error"
+           class="error-message"
+           role="alert">
+        {{ getErrorMessage('employer') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="position">Position <span class="required-asterisk">*</span></label>
+      <input 
+        id="position" 
+        type="text" 
+        formControlName="position" 
+        placeholder="Enter position title"
+        [class.error]="hasError('position')"
+        [attr.aria-invalid]="hasError('position')"
+        [attr.aria-describedby]="hasError('position') ? 'position-error' : null">
+      <div *ngIf="hasError('position')" 
+           id="position-error"
+           class="error-message"
+           role="alert">
+        {{ getErrorMessage('position') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="client">Client</label>
+      <input 
+        id="client" 
+        type="text" 
+        formControlName="client" 
+        placeholder="Enter client name (optional)">
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+      <div class="form-group">
+        <label for="from">From Date <span class="required-asterisk">*</span></label>
+        <input 
+          id="from" 
+          type="date" 
+          formControlName="from"
+          (change)="employmentForm.updateValueAndValidity()"
+          [class.error]="hasError('from')"
+          [attr.aria-invalid]="hasError('from')"
+          [attr.aria-describedby]="hasError('from') ? 'from-error' : null">
+        <div *ngIf="hasError('from')" 
+             id="from-error"
+             class="error-message"
+             role="alert">
+          {{ getErrorMessage('from') }}
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="!employmentForm.get('till')?.value">
+        <label for="to">To Date</label>
+        <input 
+          id="to" 
+          type="date" 
+          formControlName="to"
+          (change)="employmentForm.updateValueAndValidity()"
+          [disabled]="employmentForm.get('till')?.value"
+          [class.error]="hasError('to')"
+          [attr.aria-invalid]="hasError('to')"
+          [attr.aria-describedby]="hasError('to') ? 'to-error' : null">
+        <div *ngIf="hasError('to')" 
+             id="to-error"
+             class="error-message"
+             role="alert">
+          {{ getErrorMessage('to') }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group checkbox-group">
+      <input 
+        id="till" 
+        type="checkbox" 
+        formControlName="till"
+        (change)="onTillChange()">
+      <label for="till" style="margin: 0; font-weight: normal;">Current Employment (Till Present)</label>
+    </div>
+
+    <div class="form-group">
+      <label for="desc">Description</label>
+      <textarea 
+        id="desc" 
+        formControlName="desc" 
+        placeholder="Enter job description (optional)"></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-success" [disabled]="employmentForm.invalid || saving">
+        {{ saving ? 'Saving...' : (isEditMode ? 'Update' : 'Create') }}
+      </button>
+      <button type="button" (click)="onCancel()" class="btn btn-secondary">Cancel</button>
+    </div>
+  </form>
+</div>
+

@@ -1,0 +1,76 @@
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: employment-history-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: employment_history
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - employment-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: employment-history-backend
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/employment_history
+      PORT: 5005
+      NODE_ENV: production
+      LOGIN_USERNAME: ${LOGIN_USERNAME:-admin}
+      LOGIN_PASSWORD: ${LOGIN_PASSWORD:-admin}
+      LOGIN_PHONE: ${LOGIN_PHONE:-1234567890}
+    ports:
+      - "5005:5005"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - employment-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 5005 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command: sh -c "sleep 5 && npm run db:migrate && npm start"
+
+  # Frontend UI
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: employment-history-frontend
+    ports:
+      - "5003:5003"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - employment-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  employment-network:
+    driver: bridge
+

@@ -1,0 +1,13 @@
+<div class="session-warning-overlay" *ngIf="showWarning">
+  <div class="session-warning-modal">
+    <div class="warning-icon">⚠️</div>
+    <h3>Session Timeout Warning</h3>
+    <p>Your session will expire in <strong>{{ remainingMinutes }} minute(s)</strong> due to inactivity.</p>
+    <p class="warning-text">Click "Stay Signed In" to continue your session.</p>
+    <div class="warning-actions">
+      <button (click)="extendSession()" class="btn btn-primary">Stay Signed In</button>
+      <button (click)="logout()" class="btn btn-secondary">Logout</button>
+    </div>
+  </div>
+</div>
+

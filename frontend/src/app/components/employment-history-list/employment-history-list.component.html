@@ -1,0 +1,155 @@
+<div class="card">
+  <div class="card-header">
+    <h2>Employment History</h2>
+    <a routerLink="/add" class="btn btn-primary add-new-btn">
+      + Add New
+    </a>
+  </div>
+
+  <!-- Filters and Sorting -->
+  <div class="filters-section" *ngIf="!loading && allHistories.length > 0">
+    <div class="filters-row">
+      <div class="filter-group">
+        <label for="filterEmployer">Filter by Employer:</label>
+        <input 
+          id="filterEmployer" 
+          type="text" 
+          [(ngModel)]="filterEmployer" 
+          (ngModelChange)="applyFilters()"
+          placeholder="Search employer...">
+      </div>
+      
+      <div class="filter-group">
+        <label for="filterPosition">Filter by Position:</label>
+        <input 
+          id="filterPosition" 
+          type="text" 
+          [(ngModel)]="filterPosition" 
+          (ngModelChange)="applyFilters()"
+          placeholder="Search position...">
+      </div>
+      
+      <div class="filter-group">
+        <label for="filterStatus">Filter by Status:</label>
+        <select 
+          id="filterStatus" 
+          [(ngModel)]="filterStatus" 
+          (ngModelChange)="applyFilters()">
+          <option value="">All</option>
+          <option value="current">Current</option>
+          <option value="past">Past</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="sortField">Sort by:</label>
+        <select 
+          id="sortField" 
+          [(ngModel)]="sortField" 
+          (ngModelChange)="applySorting()">
+          <option value="">None</option>
+          <option value="employer">Employer</option>
+          <option value="position">Position</option>
+          <option value="from">From Date</option>
+          <option value="to">To Date</option>
+          <option value="client">Client</option>
+        </select>
+      </div>
+      
+      <div class="filter-group" *ngIf="sortField">
+        <label for="sortDirection">Direction:</label>
+        <select 
+          id="sortDirection" 
+          [(ngModel)]="sortDirection" 
+          (ngModelChange)="applySorting()">
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
+      </div>
+      
+      <button (click)="clearFilters()" class="btn btn-secondary" style="align-self: flex-end; padding: 8px 16px;">
+        Clear Filters
+      </button>
+    </div>
+    
+    <div class="results-info">
+      Showing {{ filteredHistories.length }} of {{ allHistories.length }} records
+    </div>
+  </div>
+
+  <div *ngIf="loading" style="text-align: center; padding: 40px;">
+    <p>Loading...</p>
+  </div>
+
+  <div *ngIf="!loading && allHistories.length === 0" class="empty-state">
+    <p>No employment history found.</p>
+  </div>
+
+  <div *ngIf="!loading && allHistories.length > 0 && filteredHistories.length === 0" class="empty-state">
+    <p>No records match your filters.</p>
+    <button (click)="clearFilters()" class="btn btn-primary" style="margin-top: 10px;">Clear Filters</button>
+  </div>
+
+  <!-- Grouped/Categorized View -->
+  <div class="grouped-container" *ngIf="!loading && groupedHistories.length > 0">
+    <div class="employer-group" *ngFor="let employerGroup of groupedHistories">
+      <div class="employer-header">
+        <h3 class="employer-title">
+          <span class="employer-icon">🏢</span>
+          {{ employerGroup.employerName }}
+        </h3>
+        <span class="employer-count">{{ getTotalCountForEmployer(employerGroup) }} position(s)</span>
+      </div>
+
+      <div class="client-groups">
+        <div class="client-group" *ngFor="let clientGroup of employerGroup.clientGroups">
+          <div class="client-header">
+            <h4 class="client-title">
+              <span class="client-icon">👤</span>
+              {{ clientGroup.clientName }}
+            </h4>
+            <span class="client-count">{{ clientGroup.histories.length }} position(s)</span>
+          </div>
+
+          <div class="history-items">
+            <div class="history-item" *ngFor="let history of clientGroup.histories">
+              <div class="history-main">
+                <div class="history-position">
+                  <strong>{{ history.position }}</strong>
+                  <span [class]="history.till ? 'badge badge-success' : 'badge badge-secondary'">
+                    {{ history.till ? 'Current' : 'Past' }}
+                  </span>
+                </div>
+                <div class="history-dates">
+                  <span class="date-label">From:</span> {{ formatDate(history.from) }}
+                  <span class="date-separator">•</span>
+                  <span class="date-label">To:</span> {{ history.till ? 'Present' : (history.to ? formatDate(history.to) : '-') }}
+                </div>
+                <div class="history-description" *ngIf="history.desc">
+                  {{ history.desc }}
+                </div>
+              </div>
+              <div class="history-actions">
+                <a [routerLink]="['/edit', history.id]" class="btn-icon btn-edit" title="Edit">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </a>
+                <button (click)="deleteHistory(history.id!)" class="btn-icon btn-delete" title="Delete">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

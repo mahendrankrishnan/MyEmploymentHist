@@ -1,0 +1,12 @@
+<div class="confirmation-overlay" *ngIf="showDialog" (click)="onCancel()">
+  <div class="confirmation-modal" (click)="$event.stopPropagation()">
+    <div class="dialog-icon">❓</div>
+    <h3>{{ title }}</h3>
+    <p>{{ message }}</p>
+    <div class="dialog-actions">
+      <button (click)="onConfirm()" class="btn btn-confirm">{{ confirmText }}</button>
+      <button (click)="onCancel()" class="btn btn-cancel">{{ cancelText }}</button>
+    </div>
+  </div>
+</div>
+
