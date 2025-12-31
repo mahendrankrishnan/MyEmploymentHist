@@ -4,25 +4,48 @@ import { Observable, BehaviorSubject, tap } from 'rxjs';
 import { Router } from '@angular/router';
 
 export interface LoginCredentials {
-  username: string;
+  email: string;
   password: string;
   phone: string;
 }
 
-export interface LoginResponse {
-  success: boolean;
-  token: string;
+export interface User {
+  id: number;
   username: string;
+  email: string;
+  phone: string;
+}
+
+export interface Role {
+  id: number;
+  roleName: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Application {
+  id: number;
+  appName: string;
+  createdAt: string;
+  updatedAt: string;
+  roles: Role[];
+}
+
+export interface LoginResponse {
   message: string;
+  token: string;
+  user: User;
+  applications: Application[];
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = '/api/auth';
+  private apiUrl = 'http://localhost:4501/api/auth';
   private tokenKey = 'auth_token';
   private usernameKey = 'auth_username';
+  private userKey = 'auth_user';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
   private usernameSubject = new BehaviorSubject<string | null>(this.getUsername());
@@ -36,11 +59,12 @@ export class AuthService {
   login(credentials: LoginCredentials): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
-        if (response.success) {
+        if (response.message === 'Login successful' && response.token) {
           localStorage.setItem(this.tokenKey, response.token);
-          localStorage.setItem(this.usernameKey, response.username);
+          localStorage.setItem(this.usernameKey, response.user.username);
+          localStorage.setItem(this.userKey, JSON.stringify(response.user));
           this.isAuthenticatedSubject.next(true);
-          this.usernameSubject.next(response.username);
+          this.usernameSubject.next(response.user.username);
         }
       })
     );
@@ -49,6 +73,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.usernameKey);
+    localStorage.removeItem(this.userKey);
     localStorage.removeItem('staySignedIn');
     this.isAuthenticatedSubject.next(false);
     this.usernameSubject.next(null);
@@ -65,6 +90,11 @@ export class AuthService {
 
   getUsername(): string | null {
     return localStorage.getItem(this.usernameKey);
+  }
+
+  getUser(): User | null {
+    const userStr = localStorage.getItem(this.userKey);
+    return userStr ? JSON.parse(userStr) : null;
   }
 
   getAuthHeaders(): { [key: string]: string } {

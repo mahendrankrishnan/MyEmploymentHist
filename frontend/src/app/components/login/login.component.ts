@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
     private sessionTimeoutService: SessionTimeoutService
   ) {
     this.loginForm = this.fb.group({
-      username: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       phone: ['', Validators.required],
       staySignedIn: [false]
@@ -44,14 +44,14 @@ export class LoginComponent implements OnInit {
       this.errorMessage = '';
 
       const credentials = {
-        username: this.loginForm.value.username,
+        email: this.loginForm.value.email,
         password: this.loginForm.value.password,
         phone: this.loginForm.value.phone
       };
       
       this.authService.login(credentials).subscribe({
         next: (response) => {
-          if (response.success) {
+          if (response.message === 'Login successful' && response.token) {
             // Start session timeout with stay signed in preference
             const staySignedIn = this.loginForm.value.staySignedIn || false;
             localStorage.setItem('staySignedIn', staySignedIn.toString());

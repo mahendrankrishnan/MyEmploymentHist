@@ -23,16 +23,17 @@
     </div>
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
-        <label for="username">Username</label>
+        <label for="email">Email</label>
         <input 
-          id="username" 
-          type="text" 
-          formControlName="username" 
-          placeholder="Enter username"
-          [class.error]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
-        <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" 
+          id="email" 
+          type="email" 
+          formControlName="email" 
+          placeholder="Enter email address"
+          [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+        <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" 
              class="error-message">
-          Username is required
+          <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
+          <span *ngIf="loginForm.get('email')?.errors?.['email']">Please enter a valid email address</span>
         </div>
       </div>
 

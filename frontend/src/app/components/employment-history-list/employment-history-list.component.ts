@@ -40,6 +40,9 @@ export class EmploymentHistoryListComponent implements OnInit {
   sortField: SortField = null;
   sortDirection: SortDirection = 'asc';
 
+  // Expand/Collapse state for employers
+  expandedEmployers = new Set<string>();
+
   constructor(
     private employmentHistoryService: EmploymentHistoryService,
     private confirmationDialogService: ConfirmationDialogService
@@ -49,21 +52,46 @@ export class EmploymentHistoryListComponent implements OnInit {
     this.loadEmploymentHistories();
   }
 
-  loadEmploymentHistories() {
-    this.loading = true;
-    this.employmentHistoryService.getAll().subscribe({
-      next: (data) => {
-        this.allHistories = data;
-        this.applyFilters();
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading employment histories:', error);
-        this.loading = false;
-        alert('Failed to load employment history. Please make sure the backend server is running.');
+  // Expand/Collapse methods
+  toggleEmployer(employerName: string) {
+    if (this.expandedEmployers.has(employerName)) {
+      this.expandedEmployers.delete(employerName);
+    } else {
+      this.expandedEmployers.add(employerName);
+    }
+  }
+
+  isEmployerExpanded(employerName: string): boolean {
+    return this.expandedEmployers.has(employerName);
+  }
+
+  // Initialize all employers as expanded when data is loaded
+  // Preserves existing expanded state for employers that still exist after filtering
+  initializeExpandedState() {
+    this.groupedHistories.forEach(employerGroup => {
+      // Only add if not already in the set (preserves user's expand/collapse choices)
+      if (!this.expandedEmployers.has(employerGroup.employerName)) {
+        this.expandedEmployers.add(employerGroup.employerName);
       }
     });
   }
+
+      loadEmploymentHistories() {
+        this.loading = true;
+        this.employmentHistoryService.getAll().subscribe({
+          next: (data) => {
+            this.allHistories = data;
+            this.applyFilters();
+            this.initializeExpandedState(); // Initialize expanded state after grouping
+            this.loading = false;
+          },
+          error: (error) => {
+            console.error('Error loading employment histories:', error);
+            this.loading = false;
+            alert('Failed to load employment history. Please make sure the backend server is running.');
+          }
+        });
+      }
 
   applyFilters() {
     let filtered = [...this.allHistories];
@@ -219,6 +247,8 @@ export class EmploymentHistoryListComponent implements OnInit {
     
     // Regroup after sorting
     this.groupHistories();
+    // Preserve expanded state for existing employers, expand new ones
+    this.initializeExpandedState();
   }
 
   sortBy(field: SortField) {

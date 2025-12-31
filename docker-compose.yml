@@ -26,9 +26,11 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: employment-history-backend
-    env_file:
-      - .env
+    # env_file is optional - only load if .env exists
+    # You can create a .env file to override these values if needed
     environment:
+      # DATABASE_URL uses 'postgres' as hostname (the service name) and port 5432 (internal container port)
+      # This allows containers to communicate via Docker's internal network
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/employment_history
       PORT: 5005
       NODE_ENV: production

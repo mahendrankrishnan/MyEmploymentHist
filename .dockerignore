@@ -3,5 +3,7 @@ node_modules
 .gitignore
 *.md
 .env
+.env.*
 .env.local
+*.env
 

@@ -93,15 +93,22 @@
   <!-- Grouped/Categorized View -->
   <div class="grouped-container" *ngIf="!loading && groupedHistories.length > 0">
     <div class="employer-group" *ngFor="let employerGroup of groupedHistories">
-      <div class="employer-header">
-        <h3 class="employer-title">
-          <span class="employer-icon">🏢</span>
-          {{ employerGroup.employerName }}
-        </h3>
+      <div class="employer-header" (click)="toggleEmployer(employerGroup.employerName)">
+        <div class="employer-header-left">
+          <button class="expand-toggle-btn" type="button" [attr.aria-expanded]="isEmployerExpanded(employerGroup.employerName)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [class.expanded]="isEmployerExpanded(employerGroup.employerName)">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <h3 class="employer-title">
+            <span class="employer-icon">🏢</span>
+            {{ employerGroup.employerName }}
+          </h3>
+        </div>
         <span class="employer-count">{{ getTotalCountForEmployer(employerGroup) }} position(s)</span>
       </div>
 
-      <div class="client-groups">
+      <div class="client-groups" *ngIf="isEmployerExpanded(employerGroup.employerName)">
         <div class="client-group" *ngFor="let clientGroup of employerGroup.clientGroups">
           <div class="client-header">
             <h4 class="client-title">
