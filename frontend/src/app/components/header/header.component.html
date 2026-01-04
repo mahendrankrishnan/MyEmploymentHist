@@ -1,17 +1,59 @@
 <header style="background-color: #007bff; color: white; padding: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
   <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center;">
-    <h1 style="margin: 0; font-size: 24px;">
+    <h1 style="margin: 0; font-size: 24px; display: flex; align-items: center; gap: 12px;">
+      <div class="logo-wrapper">
+        <svg class="header-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <!-- Briefcase icon -->
+          <rect x="40" y="60" width="120" height="100" rx="8" fill="#007bff" opacity="0.9"/>
+          <rect x="50" y="70" width="100" height="80" rx="4" fill="white" opacity="0.2"/>
+          <rect x="60" y="50" width="80" height="20" rx="4" fill="#0056b3"/>
+          <line x1="80" y1="50" x2="80" y2="70" stroke="white" stroke-width="3"/>
+          <line x1="120" y1="50" x2="120" y2="70" stroke="white" stroke-width="3"/>
+          <!-- Document lines -->
+          <line x1="70" y1="100" x2="130" y2="100" stroke="white" stroke-width="2" opacity="0.8"/>
+          <line x1="70" y1="115" x2="130" y2="115" stroke="white" stroke-width="2" opacity="0.8"/>
+          <line x1="70" y1="130" x2="110" y2="130" stroke="white" stroke-width="2" opacity="0.8"/>
+        </svg>
+      </div>
       <a routerLink="/" style="color: white; text-decoration: none;">My Employment History</a>
     </h1>
-    <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
-      <span *ngIf="username" class="welcome-text">
-        Welcome {{ username }}
-      </span>
+    <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start; padding-left: 20px;">
+      <div *ngIf="username && isLoggedIn" class="welcome-section">
+        <div class="date-text">{{ currentDate }}</div>
+        <div class="welcome-text">Welcome Back, {{ username }}</div>
+      </div>
     </div>
-    <nav>
-      <a routerLink="/" class="nav-link">Home</a>
-      <button *ngIf="isLoggedIn" (click)="logout()" class="nav-link nav-link-logout" style="background: none; border: none; cursor: pointer;">Logout</button>
-    </nav>
+    <div *ngIf="isLoggedIn" class="profile-dropdown-container">
+      <button class="profile-button" (click)="toggleDropdown()" type="button">
+        <svg class="profile-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="white" stroke-width="2" fill="none"/>
+          <circle cx="12" cy="8" r="3" stroke="white" stroke-width="2" fill="none"/>
+          <path d="M6 20 C6 16, 8.5 14, 12 14 C15.5 14, 18 16, 18 20" stroke="white" stroke-width="2" fill="none"/>
+        </svg>
+      </button>
+      <div class="dropdown-menu" *ngIf="isDropdownOpen" (click)="$event.stopPropagation()">
+        <div class="dropdown-user-info">
+          <div class="dropdown-username">{{ username }}</div>
+          <div class="dropdown-email" *ngIf="userEmail">{{ userEmail }}</div>
+        </div>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item dropdown-link" (click)="goToProfile()">
+          <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2" fill="none"/>
+            <path d="M6 20 C6 16, 8.5 14, 12 14 C15.5 14, 18 16, 18 20" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+          My Profile
+        </button>
+        <button class="dropdown-item dropdown-link dropdown-logout" (click)="logout()">
+          <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="16" height="16" rx="2" fill="currentColor"/>
+            <path d="M10 12 L14 12 M12 10 L10 12 L12 14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="16" y1="12" x2="20" y2="12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Logout
+        </button>
+      </div>
+    </div>
   </div>
 </header>
 

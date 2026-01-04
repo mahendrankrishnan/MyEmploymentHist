@@ -21,6 +21,11 @@ export const routes: Routes = [
     path: 'edit/:id',
     loadComponent: () => import('./components/employment-history-form/employment-history-form.component').then(m => m.EmploymentHistoryFormComponent),
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'profile',
+    loadComponent: () => import('./components/profile/profile.component').then(m => m.ProfileComponent),
+    canActivate: [AuthGuard]
   }
 ];
 

@@ -1,0 +1,56 @@
+<div class="profile-container">
+  <div class="profile-card">
+    <div class="profile-header">
+      <h1>My Profile</h1>
+      <p class="subtitle">View your account information</p>
+    </div>
+
+    <div *ngIf="loading" class="loading">
+      <p>Loading profile...</p>
+    </div>
+
+    <div *ngIf="!loading && user" class="profile-content">
+      <div class="profile-avatar">
+        <div class="avatar-circle">
+          <div class="logo-wrapper-small">
+            <span class="logo-text-small">MK</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-info">
+        <div class="info-section">
+          <div class="info-item">
+            <label>Username</label>
+            <div class="info-value">{{ user.username || 'N/A' }}</div>
+          </div>
+
+          <div class="info-item">
+            <label>Email</label>
+            <div class="info-value">{{ user.email || 'N/A' }}</div>
+          </div>
+
+          <div class="info-item">
+            <label>Phone</label>
+            <div class="info-value">{{ user.phone || 'N/A' }}</div>
+          </div>
+
+          <div class="info-item">
+            <label>User ID</label>
+            <div class="info-value">{{ user.id || 'N/A' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <a routerLink="/" class="btn btn-secondary">Back to Home</a>
+      </div>
+    </div>
+
+    <div *ngIf="!loading && !user" class="error-message">
+      <p>Unable to load profile information. Please try logging in again.</p>
+      <a routerLink="/login" class="btn btn-primary">Go to Login</a>
+    </div>
+  </div>
+</div>
+
