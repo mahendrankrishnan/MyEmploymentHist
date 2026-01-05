@@ -25,11 +25,7 @@
     </div>
     <div *ngIf="isLoggedIn" class="profile-dropdown-container">
       <button class="profile-button" (click)="toggleDropdown()" type="button">
-        <svg class="profile-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="12" r="10" stroke="white" stroke-width="2" fill="none"/>
-          <circle cx="12" cy="8" r="3" stroke="white" stroke-width="2" fill="none"/>
-          <path d="M6 20 C6 16, 8.5 14, 12 14 C15.5 14, 18 16, 18 20" stroke="white" stroke-width="2" fill="none"/>
-        </svg>
+        <span class="profile-initials">MK</span>
       </button>
       <div class="dropdown-menu" *ngIf="isDropdownOpen" (click)="$event.stopPropagation()">
         <div class="dropdown-user-info">

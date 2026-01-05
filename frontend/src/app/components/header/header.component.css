@@ -60,10 +60,11 @@
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-.profile-icon {
-  width: 24px;
-  height: 24px;
-  stroke: #007bff;
+.profile-initials {
+  font-size: 16px;
+  font-weight: 700;
+  color: #007bff;
+  letter-spacing: 0.5px;
 }
 
 .dropdown-menu {
