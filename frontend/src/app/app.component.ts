@@ -39,8 +39,7 @@ export class AppComponent implements OnInit {
     this.showHeaderFooter = this.router.url !== '/login';
     
     // Initialize session timeout if user is already logged in
-    if (this.authService.isLoggedIn()) {
-      // Check if stay signed in was previously set (you can store this in localStorage)
+    if (this.authService.isLoggedIn() && this.authService.hasAppAccess()) {
       const staySignedIn = localStorage.getItem('staySignedIn') === 'true';
       this.sessionTimeoutService.startSession(staySignedIn);
     }

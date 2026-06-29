@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { AuthService, ACCESS_DENIED_MESSAGE } from '../../services/auth.service';
 import { SessionTimeoutService } from '../../services/session-timeout.service';
 
 @Component({
@@ -21,6 +21,7 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private sessionTimeoutService: SessionTimeoutService
   ) {
     this.loginForm = this.fb.group({
@@ -32,8 +33,11 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Redirect if already logged in
-    if (this.authService.isLoggedIn()) {
+    if (this.route.snapshot.queryParamMap.get('error') === 'access_denied') {
+      this.errorMessage = ACCESS_DENIED_MESSAGE;
+    }
+
+    if (this.authService.isLoggedIn() && this.authService.hasAppAccess()) {
       this.router.navigate(['/']);
     }
   }
@@ -52,11 +56,25 @@ export class LoginComponent implements OnInit {
       this.authService.login(credentials).subscribe({
         next: (response) => {
           if (response.message === 'Login successful' && response.token) {
-            // Start session timeout with stay signed in preference
-            const staySignedIn = this.loginForm.value.staySignedIn || false;
-            localStorage.setItem('staySignedIn', staySignedIn.toString());
-            this.sessionTimeoutService.startSession(staySignedIn);
-            this.router.navigate(['/']);
+            this.authService.verifyApplicationAccess(response.user.id).subscribe({
+              next: (hasAccess) => {
+                if (hasAccess) {
+                  const staySignedIn = this.loginForm.value.staySignedIn || false;
+                  localStorage.setItem('staySignedIn', staySignedIn.toString());
+                  this.sessionTimeoutService.startSession(staySignedIn);
+                  this.router.navigate(['/']);
+                } else {
+                  this.authService.logout(true);
+                  this.errorMessage = ACCESS_DENIED_MESSAGE;
+                  this.loading = false;
+                }
+              },
+              error: () => {
+                this.authService.logout(true);
+                this.errorMessage = ACCESS_DENIED_MESSAGE;
+                this.loading = false;
+              }
+            });
           } else {
             this.errorMessage = 'Login failed. Please check your credentials.';
             this.loading = false;
